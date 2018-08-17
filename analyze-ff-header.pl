@@ -6,7 +6,12 @@ use warnings;
 use File::Basename;
 use List::MoreUtils qw( uniq );
 
-my $header_length = $ARGV[0] or die 'Usage: ' . basename( $0 ) . " <header length>\n";
+my $usage = 'Usage: ' . basename( $0 ) . " <CoD4 pre-alpha root dir> <header length>\n";
+
+my $ff_dir        = $ARGV[0] or die $usage;
+my $header_length = $ARGV[1] or die $usage;
+
+die "Directory does not exist: $ff_dir\n" unless -e $ff_dir;
 die "Header length must be an integer.\n" unless $header_length =~ /^\d+$/;
 
 my @ff_files  = glob( '/home/chad/Downloads/CoD4_n253/*.ff' );
@@ -20,11 +25,7 @@ foreach my $ff_file ( @ff_files )
        $header =~ s/^\s+|\s+$//g;
 
     my @header_bytes = split( /\s+/, $header );
-
-    foreach my $i ( 0 .. ( ( scalar @header_bytes ) - 1 ) )
-    {
-        push( @{$indexes[$i]}, $header_bytes[$i] );
-    }
+    push( @{$indexes[$_]}, $header_bytes[$_] ) for 0 .. ( ( scalar @header_bytes ) - 1 )
 }
 
 foreach my $i ( 0 .. ( ( scalar @indexes ) - 1 ) )
