@@ -4,7 +4,7 @@ force=false
 echo_outfile_only=false
 
 usage() {
-    echo "Usage: $0 [-fp] <fastfile to convert>"
+    echo "Usage: $0 [-fp] <fastfile to extract header from>"
     exit 1;
 }
 
@@ -16,7 +16,7 @@ while getopts 'fp' opt; do
         p)
             echo_outfile_only=true
             ;;
-        *)
+        *) 
             usage
             ;;
     esac
@@ -34,20 +34,20 @@ if [[ ! -f "$1" ]]; then
 fi
 
 cwd="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
-outfile="$cwd/ff-deflated/$(basename $1).bin"
+outfile="$cwd/ff-headers/$(basename $1).bin"
 
 if [[ -f "$outfile" && $force != true ]]; then
     echo "Output file already exists: $outfile."
-    echo "To force conversion, use -f flag."
+    echo "To force extraction, use -f flag."
     exit 1
 fi
 
-(dd if="$1" ibs=28 skip=1 | zlib-flate -uncompress) > "$outfile"
+head -c 28 "$1" > "$outfile"
 
 if [[ $echo_outfile_only = true ]]; then
     echo "$outfile"
 else
-    echo "Deflated to $outfile."
+    echo "Extracted to $outfile."
 fi
 
 exit 0
